@@ -1,0 +1,15 @@
+# Provisional dependency list.
+# Pin exact versions only after auditing the shared GPU environment.
+
+torch
+torchvision
+numpy
+pandas
+Pillow
+PyYAML
+python-dotenv
+scikit-learn
+matplotlib
+seaborn
+tqdm
+pytest

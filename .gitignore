@@ -1,0 +1,53 @@
+# Secrets and access files
+.env
+.env.*
+!.env.example
+*.conf
+*.key
+*.pem
+team5-access.md
+kaggle.json
+
+# Datasets
+data/raw/
+data/processed/
+data/external/
+*.zip
+*.rar
+*.7z
+*.tar
+*.tar.gz
+
+# Trained models and experiment outputs
+checkpoints/
+runs/
+outputs/
+artifacts/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+
+# IDE and operating system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

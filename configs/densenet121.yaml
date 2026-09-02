@@ -1,0 +1,43 @@
+experiment:
+  name: densenet121_pretrained
+  seed: 42
+
+data_config: configs/data.yaml
+
+model:
+  name: densenet121
+  pretrained: true
+  weights: IMAGENET1K_V1
+  output_units: 1
+  dropout: 0.2
+
+training:
+  epochs: 15
+  batch_size: 16
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  optimizer: adamw
+  loss: weighted_bce_with_logits
+  mixed_precision: true
+
+scheduler:
+  name: reduce_lr_on_plateau
+  monitor: validation_macro_f1
+  mode: max
+  patience: 2
+
+early_stopping:
+  monitor: validation_macro_f1
+  mode: max
+  patience: 4
+
+augmentation:
+  horizontal_flip_probability: 0.5
+  rotation_degrees: 7
+
+normalization:
+  type: imagenet
+
+checkpoint:
+  save_best_only: true
+  monitor: validation_macro_f1

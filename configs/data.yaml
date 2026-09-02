@@ -1,0 +1,48 @@
+project:
+  name: wrist-abnormality
+  task: binary_classification
+
+dataset:
+  name: MURA-v1.1
+  root_env: XRAY_DATA_ROOT
+  body_part: XR_WRIST
+
+labels:
+  normal: 0
+  abnormal: 1
+  positive_class: abnormal
+
+image:
+  size: 224
+  source_channels: 1
+  model_channels: 3
+  preserve_aspect_ratio: true
+  padding: true
+
+split:
+  strategy: patient_level
+  seed: 42
+  internal_validation_fraction: 0.15
+  development_source: official_train
+  final_test_source: official_valid
+  final_test_locked: true
+  version: split_v1
+
+manifests:
+  train: data/manifests/train.csv
+  validation: data/manifests/validation.csv
+  test: data/manifests/test.csv
+
+prediction:
+  level: study
+  study_aggregation: mean_probability
+
+evaluation:
+  primary_metric: macro_f1
+  clinical_metric: abnormal_sensitivity
+  additional_metrics:
+    - specificity
+    - roc_auc
+    - pr_auc
+    - cohen_kappa
+    - confusion_matrix
