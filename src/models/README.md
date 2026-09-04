@@ -1,6 +1,6 @@
 # Model module contract
 
-This package will contain the custom CNN baseline and pretrained DenseNet121.
+This package contains the custom CNN baseline and pretrained DenseNet121 for pediatric pneumonia classification.
 
 Planned modules:
 
@@ -11,7 +11,8 @@ Planned modules:
 Model contract:
 
 - Input shape: `[batch, 3, 224, 224]`
-- Output shape: `[batch]` or `[batch, 1]` containing logits
+- Output shape: `[batch]` or `[batch, 1]` containing pneumonia logits
+- Target mapping: normal `0`, pneumonia `1`
 - Training loss: weighted binary cross-entropy with logits
 - Sigmoid is applied only when probabilities are required
 - Checkpoint paths and pretrained downloads must not be committed

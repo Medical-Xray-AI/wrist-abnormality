@@ -1,5 +1,5 @@
 experiment:
-  name: baseline_cnn
+  name: custom_cnn_baseline
   seed: 42
 
 data_config: configs/data.yaml
@@ -30,8 +30,13 @@ early_stopping:
   patience: 5
 
 augmentation:
-  horizontal_flip_probability: 0.5
-  rotation_degrees: 7
+  horizontal_flip_probability: 0.0
+  rotation_degrees: 5
+  translation_fraction: 0.03
+  brightness_contrast_probability: 0.2
+
+normalization:
+  type: dataset_statistics
 
 checkpoint:
   save_best_only: true

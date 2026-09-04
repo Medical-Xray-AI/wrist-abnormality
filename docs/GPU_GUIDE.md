@@ -5,8 +5,8 @@
 - Receive VPN and Jupyter access details only through the approved private channel.
 - Never paste private keys or tokens into GitHub issues, pull requests, notebooks, screenshots, or chat messages.
 - Keep WireGuard configuration files outside this repository.
-- Do not commit the access instruction document.
-- If one WireGuard identity was provided for the whole team, do not use it concurrently on several devices unless the administrator confirms that this is supported. Prefer separate member configurations or a team schedule.
+- Do not commit the access instruction document or Kaggle credentials.
+- If one WireGuard identity was provided for the whole team, do not use it concurrently on several devices unless the administrator confirms support. Prefer separate member configurations or a schedule.
 
 ## Connecting
 
@@ -20,7 +20,7 @@ Do not copy secret connection values into this guide.
 
 ## First environment audit
 
-Run these commands in a JupyterLab terminal before installing or upgrading packages:
+Run these commands in a JupyterLab terminal or as `!` commands in a notebook before installing or upgrading packages:
 
 ```bash
 nvidia-smi
@@ -33,33 +33,37 @@ Record the results in a team note. Do not replace the server's PyTorch installat
 
 ## Shared storage convention
 
-Keep one shared extracted copy of MURA on the GPU server. Point each working copy to it using a private `.env` file:
+Keep one shared extracted copy of the Kaggle pediatric pneumonia dataset on persistent GPU-accessible storage. Point each working copy to it using a private `.env` file:
 
 ```env
-XRAY_DATA_ROOT=/path/provided/by/admin/MURA-v1.1
+XRAY_DATA_ROOT=/path/provided/by/admin/chest_xray
 XRAY_OUTPUT_ROOT=/path/provided/by/admin/team5_outputs
 XRAY_NUM_WORKERS=4
 ```
 
-Use relative paths inside manifests. Do not place raw data or outputs inside the Git repository.
+`XRAY_DATA_ROOT` must directly contain the `train`, `val`, and `test` directories. Use relative paths inside manifests. Do not place raw data or outputs inside the Git repository.
+
+Confirm with the administrator that the chosen storage survives Jupyter or server restarts before uploading the archive.
 
 ## Running experiments
 
 Before a run:
 
-1. Pull the reviewed code.
+1. Pull the reviewed code or the specific approved feature branch.
 2. Record the commit SHA with `git rev-parse HEAD`.
 3. Choose a committed config and seed.
-4. Create a unique run ID such as `20260904_member3_densenet_s42`.
-5. Add the planned run to `docs/experiment_registry.csv`.
-6. Check GPU availability with `nvidia-smi`.
+4. Confirm that the run uses `split_v1`.
+5. Create a unique run ID such as `20260905_member3_densenet_s42`.
+6. Add the planned run to `docs/experiment_registry.csv`.
+7. Check GPU availability with `nvidia-smi`.
 
 During a run:
 
-- Run only one full training job at a time unless the team has confirmed sufficient memory.
+- Run only one full training job at a time unless sufficient memory is confirmed.
 - Use mixed precision when supported.
 - Save checkpoints frequently enough to resume after interruption.
-- Monitor GPU memory; do not occupy the GPU with abandoned notebooks.
+- Monitor GPU memory and stop abandoned kernels.
+- Never calculate preprocessing statistics from the locked test set.
 
 After a run:
 
@@ -71,6 +75,6 @@ After a run:
 ## Troubleshooting
 
 - `torch.cuda.is_available()` is false: confirm the GPU kernel/environment and compare the installed PyTorch build with the server CUDA setup.
-- Out-of-memory error: stop duplicate kernels, reduce batch size, then record the change in the run notes.
+- Out-of-memory error: stop duplicate kernels, reduce batch size, then record the change in run notes.
 - Disconnected session: resume from the most recent checkpoint instead of restarting without a record.
 - Cannot reach JupyterLab: verify the WireGuard tunnel, then contact the administrator without sharing secrets publicly.

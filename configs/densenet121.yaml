@@ -32,8 +32,10 @@ early_stopping:
   patience: 4
 
 augmentation:
-  horizontal_flip_probability: 0.5
-  rotation_degrees: 7
+  horizontal_flip_probability: 0.0
+  rotation_degrees: 5
+  translation_fraction: 0.03
+  brightness_contrast_probability: 0.2
 
 normalization:
   type: imagenet

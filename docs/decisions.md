@@ -2,17 +2,27 @@
 
 Record decisions that affect more than one project component. Do not silently change a shared contract in implementation code.
 
+## Current decisions
+
 | Date | Decision | Rationale | Status |
 |---|---|---|---|
-| 2026-09-03 | Use the `XR_WRIST` subset of MURA. | It supports an interesting musculoskeletal abnormality task with patient and study structure. | Accepted |
-| 2026-09-03 | Define the task as normal versus abnormal, not fracture diagnosis. | MURA supplies study-level normal/abnormal labels and does not provide reliable abnormality subtypes. | Accepted |
-| 2026-09-03 | Split development data at patient level. | Keeping every study and image from a patient in one split prevents identity leakage. | Accepted |
-| 2026-09-03 | Use official train for development and reserve official valid as the locked final test. | Model and threshold selection must remain separate from final evaluation. | Accepted |
-| 2026-09-03 | Compare a custom CNN with pretrained DenseNet121. | This satisfies the baseline-versus-transfer-learning comparison while fitting the available compute budget. | Accepted |
-| 2026-09-03 | Start at 224 x 224, preserve aspect ratio, pad, and replicate grayscale to three channels for DenseNet. | This is a compute-efficient starting point compatible with ImageNet-pretrained weights. | Accepted |
-| 2026-09-03 | Use study-level mean probability across views. | MURA labels are study-level and a study may contain multiple images. | Accepted |
-| 2026-09-03 | Use study-level Macro F1 as the primary metric and abnormal sensitivity as the clinical metric. | Macro F1 treats both classes explicitly; sensitivity exposes abnormal false negatives. | Accepted |
-| 2026-09-03 | Select the classification threshold on validation data only. | Test-driven threshold tuning would leak final evaluation information. | Accepted |
+| 2026-09-05 | Use the Kermany pediatric chest X-ray dataset distributed as `paultimothymooney/chest-xray-pneumonia`. | It directly matches the required pneumonia-versus-normal chest X-ray task and is practical for the available time and compute. | Accepted |
+| 2026-09-05 | Define the target as image-level `NORMAL` versus `PNEUMONIA`. | The selected distribution provides image folders and binary labels, not reliable study groupings. | Accepted |
+| 2026-09-05 | Treat bacterial/viral filename information as audit metadata, not as the target. | The project remains a binary pneumonia detection task. | Accepted |
+| 2026-09-05 | Do not use the provided 16-image validation folder as final validation. | It is too small for stable model, early-stopping, or threshold selection. | Accepted |
+| 2026-09-05 | Create `split_v1` at patient level, using duplicate groups as a fallback when patient identity is uncertain. | This reduces identity and duplicate leakage. | Accepted |
+| 2026-09-05 | Retain the provided test folder only after confirming no patient or duplicate overlap. | A contaminated test split would overestimate generalization. | Accepted |
+| 2026-09-05 | Compare a custom CNN with pretrained DenseNet121. | This satisfies the baseline-versus-transfer-learning comparison while fitting the available compute budget. | Accepted |
+| 2026-09-05 | Start at 224 x 224, preserve aspect ratio, pad, and replicate grayscale to three channels. | This is a compute-efficient starting point compatible with ImageNet-pretrained weights. | Accepted |
+| 2026-09-05 | Use image-level Macro F1 as the primary metric and pneumonia sensitivity as the clinical metric. | Macro F1 exposes both imbalanced classes; sensitivity exposes pneumonia false negatives. | Accepted |
+| 2026-09-05 | Select the classification threshold on validation data only. | Test-driven threshold tuning would leak final evaluation information. | Accepted |
+
+## Superseded decisions
+
+| Date | Previous decision | Reason superseded | Status |
+|---|---|---|---|
+| 2026-09-03 | Use the `XR_WRIST` subset of MURA for study-level abnormality classification. | The team switched datasets before model development to align directly with the original pneumonia project brief. | Superseded |
+| 2026-09-03 | Aggregate multiple wrist views by study-level mean probability. | The selected pneumonia distribution is evaluated per chest X-ray image and has no equivalent study contract. | Superseded |
 
 ## Proposed changes
 

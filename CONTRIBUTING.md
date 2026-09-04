@@ -6,8 +6,8 @@ This repository is shared by a five-person project team. Keep changes small, rep
 
 1. Clone the repository.
 2. Copy `.env.example` to `.env`.
-3. Set `XRAY_DATA_ROOT` and `XRAY_OUTPUT_ROOT` for the current machine.
-4. Do not commit `.env`, VPN files, credentials, datasets, or model checkpoints.
+3. Set `XRAY_DATA_ROOT` and `XRAY_OUTPUT_ROOT` for the current machine or GPU workspace.
+4. Do not commit `.env`, VPN files, Kaggle credentials, datasets, or model checkpoints.
 
 Dependency versions in `requirements.txt` are provisional until the GPU environment audit is complete. Record the working Python, CUDA, PyTorch, and torchvision versions before pinning them.
 
@@ -39,15 +39,15 @@ Direct pushes, force pushes, and branch deletion on `main` should be disabled in
 
 Use concise, action-oriented messages, for example:
 
-- `Add patient-level split generator`
+- `Add leakage-aware manifest generator`
 - `Implement baseline CNN training`
-- `Report study-level validation metrics`
+- `Report image-level validation metrics`
 
 ## Data and security
 
 The repository may contain relative manifests and aggregate statistics, but must not contain:
 
-- Raw or processed X-ray images
+- Raw or processed chest X-ray images
 - Patient-identifiable information
 - Dataset archives
 - Model checkpoints

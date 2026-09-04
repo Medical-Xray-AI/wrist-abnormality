@@ -1,1 +1,1 @@
-"""Wrist X-ray abnormality classification package."""
+"""Pediatric chest X-ray pneumonia classification package."""

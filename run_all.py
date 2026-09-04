@@ -1,4 +1,4 @@
-"""Future end-to-end entry point for the wrist abnormality pipeline.
+"""Future end-to-end entry point for pediatric pneumonia classification.
 
 The executable contract is created during repository bootstrap. Training,
 evaluation, and inference stages will be connected here after their reviewed
@@ -17,7 +17,7 @@ DEFAULT_CONFIG = Path("configs/densenet121.yaml")
 def build_parser() -> argparse.ArgumentParser:
     """Build the command-line parser without importing training dependencies."""
     parser = argparse.ArgumentParser(
-        description="Run the wrist X-ray abnormality pipeline."
+        description="Run the pediatric chest X-ray pneumonia pipeline."
     )
     parser.add_argument(
         "--config",

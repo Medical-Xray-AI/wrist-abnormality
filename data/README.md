@@ -4,61 +4,88 @@ This repository does not contain raw or processed medical images.
 
 ## Dataset
 
-The project uses the wrist subset of MURA:
+The project uses the pediatric chest X-ray subset distributed as **Chest X-Ray Images (Pneumonia)**:
 
-- Dataset version: MURA-v1.1
-- Body part: `XR_WRIST`
-- Labels: `normal` and `abnormal`
-- Task: Binary classification
+- Original dataset: Kermany pediatric chest X-rays
+- Distribution: Kaggle, `paultimothymooney/chest-xray-pneumonia`
+- Population: children approximately 1-5 years old
+- Task: binary classification
+- Labels: `NORMAL` and `PNEUMONIA`
+- Prediction level: image
 
-Official source:
-https://stanfordmlgroup.github.io/competitions/mura/
+Sources:
+
+- https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia
+- https://data.mendeley.com/datasets/rscbjbr9sj/3
+- https://doi.org/10.1016/j.cell.2018.02.010
 
 ## Expected dataset structure
 
 The directory referenced by `XRAY_DATA_ROOT` should contain:
 
 ```text
-MURA-v1.1/
+chest_xray/
 |-- train/
-|-- valid/
-|-- train_image_paths.csv
-|-- train_labeled_studies.csv
-|-- valid_image_paths.csv
-`-- valid_labeled_studies.csv
+|   |-- NORMAL/
+|   `-- PNEUMONIA/
+|-- val/
+|   |-- NORMAL/
+|   `-- PNEUMONIA/
+`-- test/
+    |-- NORMAL/
+    `-- PNEUMONIA/
 ```
 
-## Local configuration
+Some archive versions contain an additional nested `chest_xray` directory. `XRAY_DATA_ROOT` must point to the innermost directory that directly contains `train`, `val`, and `test`.
 
-Each team member must copy `.env.example` as `.env` and set:
+## Local or server configuration
+
+Each working copy must copy `.env.example` as `.env` and set:
 
 ```env
-XRAY_DATA_ROOT=C:/path/to/MURA-v1.1
+XRAY_DATA_ROOT=/absolute/path/to/chest_xray
+XRAY_OUTPUT_ROOT=/absolute/path/to/team5_outputs
+XRAY_NUM_WORKERS=4
 ```
 
 The `.env` file must never be committed.
 
 ## Split policy
 
-- Only `XR_WRIST` images are used.
-- The official training set is divided into internal train and validation sets.
-- The internal division must be performed at patient level.
-- All images and studies belonging to one patient must remain in the same split.
-- The official validation set is reserved as the locked final test set.
-- Final test data must not be used for model or threshold selection.
+The provided Kaggle `val` folder contains only 16 images and is not suitable as the project's validation set.
+
+The data owner must:
+
+1. Inventory all images and original folder labels.
+2. Parse patient identifiers from filenames when reliable.
+3. Compute exact file hashes and inspect near-duplicate groups.
+4. Combine provided `train` and `val` for development.
+5. Create a stratified internal validation split at patient/group level using seed 42.
+6. Audit the provided `test` folder against development data.
+7. Keep the provided test as locked final test only if no patient or duplicate overlap exists.
+8. Rebuild all three splits at patient/group level if test contamination is found.
+
+All images belonging to one patient or duplicate group must remain in exactly one split. The resulting contract is recorded as `split_v1`.
+
+## Class imbalance
+
+Pneumonia is the majority class. Class counts must be reported for every generated split, and imbalance handling must be fitted from training data only.
 
 ## Repository policy
 
 Allowed in Git:
 
 - Relative-path manifests
-- Dataset statistics
+- Aggregate dataset statistics
 - Data audit reports
-- Small aggregate plots without patient information
+- Small aggregate plots without identifying information
 
 Not allowed in Git:
 
-- X-ray images
-- Archives containing the dataset
-- Absolute local paths
+- X-ray images or dataset archives
+- Processed image copies
+- Absolute machine-specific paths
 - Patient-identifiable information
+- Kaggle credentials
+
+Use the dataset only under its source terms and do not redistribute it through this repository.

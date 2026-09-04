@@ -1,11 +1,11 @@
 # Data module contract
 
-This package will own dataset discovery, manifest generation, patient-level splitting, preprocessing, and PyTorch data loading.
+This package owns dataset discovery, auditing, leakage-aware splitting, preprocessing, and PyTorch data loading for the pediatric pneumonia task.
 
 Planned modules:
 
-- `audit.py` - dataset counts, path validation, corrupt-image checks, and duplicate checks
-- `split.py` - deterministic patient-level train/validation manifests
+- `audit.py` - class counts, path validation, corrupt-image checks, hashes, and duplicate checks
+- `split.py` - deterministic patient/group-level train, validation, and test manifests
 - `dataset.py` - image loading and sample metadata
 - `transforms.py` - resize/padding, normalization, and conservative augmentation
 
@@ -15,14 +15,17 @@ Each dataset sample should expose at least:
 image
 label
 patient_id
-study_uid
+group_id
 image_path
+source_split
+pneumonia_subtype
 ```
 
 Rules:
 
 - Read the dataset root from `XRAY_DATA_ROOT`.
 - Use paths relative to that root in committed manifests.
-- Keep every patient in exactly one split.
+- Keep every patient or duplicate group in exactly one split.
 - Apply stochastic augmentation to training data only.
-- Preserve enough metadata for study-level aggregation.
+- Preserve subtype and source-folder metadata for auditing, not as binary targets.
+- Do not use the locked test set for preprocessing statistics, threshold selection, or model selection.

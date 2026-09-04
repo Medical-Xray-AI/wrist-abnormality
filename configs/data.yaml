@@ -1,16 +1,27 @@
 project:
-  name: wrist-abnormality
+  name: pneumonia-xray
   task: binary_classification
+  prediction_level: image
 
 dataset:
-  name: MURA-v1.1
+  name: kermany_pediatric_chest_xray
+  source: kaggle
+  kaggle_slug: paultimothymooney/chest-xray-pneumonia
   root_env: XRAY_DATA_ROOT
-  body_part: XR_WRIST
+  population: pediatric_age_1_to_5
 
 labels:
   normal: 0
-  abnormal: 1
-  positive_class: abnormal
+  pneumonia: 1
+  positive_class: pneumonia
+
+audit_metadata:
+  preserve_pneumonia_subtype: true
+  subtype_values:
+    - normal
+    - bacterial
+    - viral
+    - unknown
 
 image:
   size: 224
@@ -20,11 +31,18 @@ image:
   padding: true
 
 split:
-  strategy: patient_level
+  strategy: patient_level_with_duplicate_group_fallback
   seed: 42
   internal_validation_fraction: 0.15
-  development_source: official_train
-  final_test_source: official_valid
+  development_sources:
+    - provided_train
+    - provided_val
+  preferred_final_test_source: provided_test_after_audit
+  rebuild_all_if_test_overlap: true
+  rebuild_ratios:
+    train: 0.70
+    validation: 0.15
+    test: 0.15
   final_test_locked: true
   version: split_v1
 
@@ -34,15 +52,13 @@ manifests:
   test: data/manifests/test.csv
 
 prediction:
-  level: study
-  study_aggregation: mean_probability
+  level: image
 
 evaluation:
   primary_metric: macro_f1
-  clinical_metric: abnormal_sensitivity
+  clinical_metric: pneumonia_sensitivity
   additional_metrics:
     - specificity
     - roc_auc
     - pr_auc
-    - cohen_kappa
     - confusion_matrix

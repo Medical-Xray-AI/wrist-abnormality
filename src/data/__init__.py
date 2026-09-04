@@ -1,1 +1,1 @@
-"""Data manifests, datasets, preprocessing, and patient-level splitting."""
+"""Data manifests, preprocessing, and leakage-aware group splitting."""

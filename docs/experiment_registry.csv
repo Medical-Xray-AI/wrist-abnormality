@@ -1,1 +1,1 @@
-run_id,owner,status,commit_sha,config,seed,split_version,device,start_time,end_time,duration_minutes,peak_vram_gb,best_epoch,val_macro_f1,val_abnormal_sensitivity,val_specificity,val_roc_auc,val_pr_auc,val_cohen_kappa,test_evaluated,checkpoint_path,notes
+run_id,owner,status,commit_sha,config,seed,split_version,device,start_time,end_time,duration_minutes,peak_vram_gb,best_epoch,val_macro_f1,val_pneumonia_sensitivity,val_specificity,val_roc_auc,val_pr_auc,test_evaluated,checkpoint_path,notes

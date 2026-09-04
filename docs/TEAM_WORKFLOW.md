@@ -2,34 +2,36 @@
 
 ## Shared objective
 
-Build and compare a custom CNN baseline and a pretrained DenseNet121 for study-level normal-versus-abnormal classification on the `XR_WRIST` subset of MURA.
+Build and compare a custom CNN baseline and a pretrained DenseNet121 for image-level normal-versus-pneumonia classification using the Kermany pediatric chest X-ray dataset distributed on Kaggle.
 
-The shared data contract is `configs/data.yaml`. Changes to labels, split policy, image handling, aggregation, or primary metrics require a documented team decision and pull request.
+The shared data contract is `configs/data.yaml`. Changes to labels, split policy, image handling, or primary metrics require a documented team decision and pull request.
 
 ## Responsibilities
 
 ### Member 1: data and audit
 
-- Download and verify MURA through the approved source.
-- Filter `XR_WRIST` studies.
-- Audit counts, corrupt files, labels, and duplicates.
-- Generate deterministic patient-level manifests.
+- Download and verify the approved Kaggle archive.
+- Inventory the provided train, validation, and test folders.
+- Audit class balance, corrupt files, patient identifiers, exact hashes, and near-duplicates.
+- Create deterministic patient/group-level manifests.
+- Verify that the locked test policy is safe or trigger a complete group-level re-split.
 - Implement the dataset and DataLoader contract.
 
-Deliverables: manifests, audit summary, split checks, and data-loading code.
+Deliverables: manifests, audit summary, leakage checks, split statistics, and data-loading code.
 
 ### Member 2: preprocessing and baseline
 
-- Implement preprocessing and conservative augmentation.
+- Implement aspect-ratio-preserving resize and padding.
+- Implement conservative training-only augmentation.
 - Implement the custom CNN baseline.
 - Run a small-subset overfit test and baseline experiments.
-- Document class-imbalance handling.
+- Document class-imbalance handling fitted from training data only.
 
-Deliverables: baseline model, training evidence, config, and validation results.
+Deliverables: preprocessing, baseline model, training evidence, config, and validation results.
 
 ### Member 3: pretrained model and training
 
-- Implement pretrained DenseNet121.
+- Implement pretrained DenseNet121 with a binary logit head.
 - Implement the training loop, AMP, checkpointing, and resume support.
 - Record training time and peak GPU memory.
 
@@ -37,15 +39,17 @@ Deliverables: reusable trainer, best validation checkpoint reference, and run lo
 
 ### Member 4: evaluation and interpretation
 
-- Implement study-level aggregation and metrics.
+- Implement image-level metrics and prediction export.
 - Select the decision threshold using validation data only.
-- Produce confusion matrix, ROC/PR results, ablations, error analysis, and Grad-CAM examples.
+- Produce a confusion matrix, ROC/PR results, ablations, error analysis, and Grad-CAM examples.
+- Report pneumonia sensitivity and specificity explicitly.
 
-Deliverables: evaluation tables, aggregate figures, and analysis notes.
+Deliverables: evaluation tables, safe aggregate figures, and analysis notes.
 
 ### Member 5: integration and reproducibility
 
-- Maintain the repository contracts and team instructions.
+- Maintain repository contracts and team instructions.
+- Organize shared GPU access and dataset location without exposing credentials.
 - Implement inference and the final `run_all.py` entry point.
 - Finalize pinned requirements after the GPU audit.
 - Verify a clean-clone run, latency, model size, demo, report integration, and release package.
@@ -66,17 +70,18 @@ At least one approval is required before merge.
 
 ### Gate 1: repository and data contract
 
-- Skeleton is on `main`.
+- Repository reflects the pediatric pneumonia task.
 - Credentials and raw data are ignored.
 - Dataset location is environment-based.
 - Roles and PR rules are understood.
 
 ### Gate 2: split freeze
 
-- Audit is complete.
-- Patient overlap is zero.
+- Dataset inventory and corrupt-file audit are complete.
+- Patient/group and exact-hash overlap between splits is zero.
+- Near-duplicate handling is documented.
 - Manifest schema is valid.
-- Split seed and `split_v1` are recorded.
+- Seed 42 and `split_v1` are recorded.
 
 No member may create a personal alternative split after this gate.
 
@@ -91,7 +96,7 @@ No member may create a personal alternative split after this gate.
 
 - Runs use registered configs and commit SHAs.
 - Checkpoints and logs are stored outside Git.
-- Only validation results are used for model selection.
+- Only validation results are used for model and threshold selection.
 
 ### Gate 5: final evaluation and release
 
@@ -110,7 +115,7 @@ Each member reports:
 4. GPU time needed
 5. Blocker, if any
 
-Avoid percentage-only updates such as "80% complete" without evidence.
+Avoid percentage-only updates without evidence.
 
 ## Artifact contract
 
