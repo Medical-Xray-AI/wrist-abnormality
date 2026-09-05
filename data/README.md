@@ -38,17 +38,45 @@ chest_xray/
 
 Some archive versions contain an additional nested `chest_xray` directory. `XRAY_DATA_ROOT` must point to the innermost directory that directly contains `train`, `val`, and `test`.
 
-## Local or server configuration
+## Required local download
 
-Each working copy must copy `.env.example` as `.env` and set:
+Every team member downloads the exact same public Kaggle Version 2 into their own working copy:
+
+```bash
+python scripts/download_data.py
+```
+
+Authentication is normally unnecessary. Use `--login` only if Kaggle explicitly reports an authorization error. The default destination is `data/raw/kaggle/`, which is ignored by Git. The command validates the official class counts and automatically sets `XRAY_DATA_ROOT` in the local `.env` file. To register an existing download instead:
+
+```bash
+python scripts/download_data.py --data-root "/absolute/path/to/chest_xray"
+```
+
+Each working copy therefore has its own ignored `.env`:
 
 ```env
 XRAY_DATA_ROOT=/absolute/path/to/chest_xray
-XRAY_OUTPUT_ROOT=/absolute/path/to/team5_outputs
+XRAY_OUTPUT_ROOT=outputs
 XRAY_NUM_WORKERS=4
 ```
 
-The `.env` file must never be committed.
+The `.env`, Kaggle API token, `kaggle.json`, downloaded archive, and raw images must never be committed.
+
+## Ownership of audit and split
+
+Only Member 1/data owner runs the complete preparation command and submits its evidence for review:
+
+```bash
+python scripts/prepare_data.py
+```
+
+After the reviewed `split_v1` manifests are merged, every other member runs:
+
+```bash
+python scripts/verify_local_data.py --require-manifests
+```
+
+This verifies that the local images exactly match the shared relative-path manifests. Team members must not create personal alternative splits.
 
 ## Split policy
 

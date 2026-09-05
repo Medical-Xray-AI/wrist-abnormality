@@ -1,15 +1,18 @@
 # Data module contract
 
-This package owns dataset discovery, auditing, leakage-aware splitting, preprocessing, and PyTorch data loading for the pediatric pneumonia task.
+## Modules
 
-Planned modules:
+- `download.py`: pinned Kaggle acquisition, exact inventory validation, and safe local `.env` update.
+- `audit_data.py`: inventory, integrity, identity parsing, exact hashes, perceptual hashes, duplicate groups, and leakage reports.
+- `split_data.py`: locked-test decision and deterministic group-level manifests.
+- `dataset.py`: safe relative-path resolution plus PyTorch Dataset/DataLoader helpers.
+- `verify.py`: full local dataset/manifest/path/hash/leakage verification.
+- `visualize_data.py`: class counts, deterministic sample grid, and original image dimensions.
+- `common.py`: schema, path, hashing, identity, and deterministic helper functions.
 
-- `audit.py` - class counts, path validation, corrupt-image checks, hashes, and duplicate checks
-- `split.py` - deterministic patient/group-level train, validation, and test manifests
-- `dataset.py` - image loading and sample metadata
-- `transforms.py` - resize/padding, normalization, and conservative augmentation
+## Canonical sample
 
-Each dataset sample should expose at least:
+Each `ChestXrayDataset` item contains:
 
 ```text
 image
@@ -21,11 +24,16 @@ source_split
 pneumonia_subtype
 ```
 
-Rules:
+`image` is a three-channel tensor unless a supplied transform returns another tensor representation. `label` is a scalar `torch.float32` value for the configured one-logit `BCEWithLogitsLoss`: 0 for normal and 1 for pneumonia.
 
-- Read the dataset root from `XRAY_DATA_ROOT`.
-- Use paths relative to that root in committed manifests.
-- Keep every patient or duplicate group in exactly one split.
-- Apply stochastic augmentation to training data only.
-- Preserve subtype and source-folder metadata for auditing, not as binary targets.
-- Do not use the locked test set for preprocessing statistics, threshold selection, or model selection.
+## Leakage grouping
+
+A group joins images sharing at least one of the following:
+
+1. a conservatively parsed patient ID;
+2. an exact SHA-256 hash;
+3. both pHash and dHash distance at or below the selected threshold.
+
+All members of a connected group receive one deterministic `group_id`. A split is rejected if group, known patient, or exact hash values cross its boundaries.
+
+Unparseable patient filenames keep an empty `patient_id`; this limitation must remain visible and must not be described as fully patient-level coverage.
